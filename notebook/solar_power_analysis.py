@@ -3,22 +3,36 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 # %%
-import os
-import pandas as pd
-
 # Diretório onde estão os arquivos
 base_dir = "/home/claudio/projetos/case-solar-power-plant/dados/"
+
+'''
+Os arquivos de sensores térmicos das plantas 1 e 2 possuem os mesmos tipos de metadados
+não havendo a necessidade de nenhum tipo de tratamento. 
+'''
 
 # Lê e concatena os arquivos de sensores
 sensor_files = [os.path.join(base_dir, "weather_sensor_plant_1.csv"),
                 os.path.join(base_dir, "weather_sensor_plant_2.csv")]
 
+# Carrega e converte o campo DATE_TIME para datatime de forma padronizada
 sensor_data = pd.concat([pd.read_csv(file) for file in sensor_files], ignore_index=True)
 sensor_data['DATE_TIME'] = pd.to_datetime(sensor_data['DATE_TIME'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
 
+# Verifique o resultado
+display(sensor_data.head())
+print("Total de registros sensor de temperatura:", len(sensor_data))
+print("Tipo de DATE_TIME:", sensor_data['DATE_TIME'].dtype) 
+
+# %%
 # Caminhos para os arquivos de geração de energia
+'''
+A coluna DATE_TIME dos arquivos de geração de energia possuem formatos de datas distintas.
+Nesse caso, houve a necessidade de padronizar essa coluna para deixá-la com o mesmo fomato.
+'''
 generation_plant_1_path = os.path.join(base_dir, "power_generation_plant_1.csv")
 generation_plant_2_path = os.path.join(base_dir, "power_generation_plant_2.csv")
 
@@ -33,18 +47,16 @@ generation_plant_2['DATE_TIME'] = pd.to_datetime(generation_plant_2['DATE_TIME']
 generation_data = pd.concat([generation_plant_1, generation_plant_2], ignore_index=True)
 
 # Verifique o resultado
-print(generation_data.head())
+display(generation_data)
 print("\nTotal de registros geração de energia:", len(generation_data))
-print("Total de registros sensor de temperatura:", len(sensor_data))
-print("\nTipo de DATE_TIME - geração 1:", generation_plant_1['DATE_TIME'].dtype)
-print("Tipo de DATE_TIME - geração 2:", generation_plant_2['DATE_TIME'].dtype)
-print("Tipo de DATE_TIME - geração 2:", sensor_data['DATE_TIME'].dtype) 
+print("\nTipo de DATE_TIME - arquivo 1:", generation_plant_1['DATE_TIME'].dtype)
+print("Tipo de DATE_TIME - arquivo 2:", generation_plant_2['DATE_TIME'].dtype)
 
-
-# %%
 # Verifica se houve alguma conversão falha (por exemplo, valores que não puderam ser convertidos)
+print("\nTotal de registros com falhas:")
 print(generation_data['DATE_TIME'].isnull().sum(), "erros no arquivo 1")
 print(sensor_data['DATE_TIME'].isnull().sum(), "erros no arquivo 2")
+
 
 # %%
 # Agrupar dados por hora para facilitar a análise
@@ -86,6 +98,10 @@ print(periods_of_interest[['HOUR', 'AC_POWER']])
 
 
 # %%
+'''
+Respondendo as perguntas do Case
+'''
+
 # 1. Melhor horário para redirecionamento de energia para baterias
 def analyze_peak_hours(generation_df):
     hourly_ac_power = generation_df.groupby('HOUR')['AC_POWER'].sum()
