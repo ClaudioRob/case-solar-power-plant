@@ -23,7 +23,7 @@ sensor_data = pd.concat([pd.read_csv(file) for file in sensor_files], ignore_ind
 sensor_data['DATE_TIME'] = pd.to_datetime(sensor_data['DATE_TIME'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
 
 # Verifique o resultado
-display(sensor_data.head())
+print(sensor_data.head())
 print("Total de registros sensor de temperatura:", len(sensor_data))
 print("Tipo de DATE_TIME:", sensor_data['DATE_TIME'].dtype) 
 
@@ -47,7 +47,7 @@ generation_plant_2['DATE_TIME'] = pd.to_datetime(generation_plant_2['DATE_TIME']
 generation_data = pd.concat([generation_plant_1, generation_plant_2], ignore_index=True)
 
 # Verifique o resultado
-display(generation_data)
+print(generation_data)
 print("\nTotal de registros geração de energia:", len(generation_data))
 print("\nTipo de DATE_TIME - arquivo 1:", generation_plant_1['DATE_TIME'].dtype)
 print("Tipo de DATE_TIME - arquivo 2:", generation_plant_2['DATE_TIME'].dtype)
